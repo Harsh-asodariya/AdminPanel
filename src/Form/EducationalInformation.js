@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Input from '../InputFields/Input';
-// import axios from '../../axios-travel';
 
 class EducationalInformation extends Component {
 
@@ -79,26 +78,26 @@ class EducationalInformation extends Component {
         formIsValid: false,
     }
 
-    dataHandler= () =>{
+    dataHandler = () => {
         let formData = {}
-            for (let formElement in this.state.EducationalInformation) {
-                formData[formElement] = this.state.EducationalInformation[formElement].value;
-            }
-            const updatedEducationForm = {
-                ...this.state.EducationalInformation
-            }
-            const updatedEducationData = [
-                ...this.state.EducationalData
-            ]
-            updatedEducationData.push(formData)
-            localStorage.setItem('EducationalInformation', JSON.stringify(updatedEducationData))
-            for (let inputIdentifier in updatedEducationForm) {
-                updatedEducationForm[inputIdentifier].value = '';
-                updatedEducationForm[inputIdentifier].valid = false;
-                updatedEducationForm[inputIdentifier].touched = false;
-            }
-            document.getElementById('EducationInformation').reset()
-            this.setState({ EducationalInformation: updatedEducationForm, EducationalData: updatedEducationData, formIsValid: false })
+        for (let formElement in this.state.EducationalInformation) {
+            formData[formElement] = this.state.EducationalInformation[formElement].value;
+        }
+        const updatedEducationForm = {
+            ...this.state.EducationalInformation
+        }
+        const updatedEducationData = [
+            ...this.state.EducationalData
+        ]
+        updatedEducationData.push(formData)
+        sessionStorage.setItem('EducationalInformation', JSON.stringify(updatedEducationData))
+        for (let inputIdentifier in updatedEducationForm) {
+            updatedEducationForm[inputIdentifier].value = '';
+            updatedEducationForm[inputIdentifier].valid = false;
+            updatedEducationForm[inputIdentifier].touched = false;
+        }
+        document.getElementById('EducationInformation').reset()
+        this.setState({ EducationalInformation: updatedEducationForm, EducationalData: updatedEducationData, formIsValid: false })
     }
 
     eventHandler = (event) => {
@@ -108,10 +107,30 @@ class EducationalInformation extends Component {
         if (event.target.id === 'add') {
             this.dataHandler()
         }
-        if(event.target.id === 'register'){
+        if (event.target.id === 'register') {
             this.dataHandler()
             alert('Registered Successfully')
-        this.props.history.push('/')
+            const personalInformation = JSON.parse(sessionStorage.getItem('PersonalInformation'))
+            const educationalInformation = JSON.parse(sessionStorage.getItem('EducationalInformation'))
+            var email = personalInformation['email'];
+            var password = personalInformation['password'];
+            let stored_users = JSON.parse(localStorage.getItem('users'));
+            if (stored_users) {
+                stored_users.push({ email: email, password: password });
+                localStorage.setItem('users', JSON.stringify(stored_users));
+            } else {
+                localStorage.setItem('users', JSON.stringify([{ email: email, password: password }]));
+            }
+
+            let user_information = JSON.parse(localStorage.getItem('userInformation'));
+            if (user_information) {
+                user_information.push({ personalInformation: personalInformation, educationalInformation: educationalInformation });
+                localStorage.setItem('userInformation', JSON.stringify(user_information));
+            } else {
+                localStorage.setItem('userInformation', JSON.stringify([{ personalInformation: personalInformation, educationalInformation: educationalInformation }]));
+            }
+            sessionStorage.clear()
+            this.props.history.push('/')
         }
 
     }
@@ -138,7 +157,7 @@ class EducationalInformation extends Component {
         if (inputIdentifier === 'startDate' || inputIdentifier === 'endDate') {
             if (event) {
                 updatedFormElement.value = event.toLocaleDateString();
-            } 
+            }
         }
         else {
             updatedFormElement.value = event.target.value;
@@ -192,7 +211,7 @@ class EducationalInformation extends Component {
         return (
             <div className='container' style={{ textAlign: 'center' }}>
                 {form}
-                
+
             </div>);
     }
 }

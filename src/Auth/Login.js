@@ -40,12 +40,24 @@ class Login extends Component {
 
     dataHandler = (event) => {
         event.preventDefault()
+
         const email = this.state.loginForm['email'].value;
         const password = this.state.loginForm['password'].value;
-        const personalInformation = JSON.parse(localStorage.getItem('PersonalInformation'))
-        if (personalInformation['email'] === email && personalInformation['password'] === password) {
-            localStorage.setItem('login', true);
+        let verified = false
+        let stored_users = JSON.parse(localStorage.getItem('users'))
+        if (stored_users) {
+            for (let u = 0; u < stored_users.length; u++) {
+                if (email === stored_users[u].email && password === stored_users[u].password) {
+                    verified = true;
+                    break;
+                }
+                
+            }
+        }
+        if (verified) {
             this.props.login()
+            sessionStorage.setItem('activeuser',email)
+            alert('Login successfull')
             this.props.history.push('/')
         }
         else {

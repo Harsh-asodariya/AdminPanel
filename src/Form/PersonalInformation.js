@@ -57,7 +57,8 @@ class PersonalInformation extends Component {
                 value: '',
                 validation: {
                     required: true,
-                    regex: /^([a-zA-Z0-9_.-]+)@([a-zA-Z0-9_.-]+)\.([a-zA-Z]){2,7}$/
+                    regex: /^([a-zA-Z0-9_.-]+)@([a-zA-Z0-9_.-]+)\.([a-zA-Z]){2,7}$/,
+                    taken: false
                 },
                 valid: false,
                 touched: false
@@ -69,7 +70,7 @@ class PersonalInformation extends Component {
                     type: 'Text',
                 },
                 value: '',
-                defaultValue : '',
+                defaultValue: '',
                 validation: {
                     required: true,
                     regex: /^([0-9]){10}$/
@@ -108,11 +109,11 @@ class PersonalInformation extends Component {
         },
         formIsValid: false
     }
-    
-    componentDidMount(){
-        let Preinfo = JSON.parse(localStorage.getItem('PersonalInformation'))
-        if(Preinfo){
-            
+
+    componentDidMount() {
+        let Preinfo = JSON.parse(sessionStorage.getItem('PersonalInformation'))
+        if (Preinfo) {
+
             const updatedPersonalInformation = {
                 ...this.state.personalInformation
             }
@@ -122,10 +123,10 @@ class PersonalInformation extends Component {
                 updatedPersonalInformation[inputIdentifier].valid = true
             }
 
-            this.setState({personalInformation : updatedPersonalInformation, formIsValid:true})
+            this.setState({ personalInformation: updatedPersonalInformation, formIsValid: true })
         }
     }
-    
+
 
     dataHandler = (event) => {
         event.preventDefault()
@@ -133,7 +134,7 @@ class PersonalInformation extends Component {
         for (let formElement in this.state.personalInformation) {
             formData[formElement] = this.state.personalInformation[formElement].value;
         }
-        localStorage.setItem('PersonalInformation', JSON.stringify(formData))
+        sessionStorage.setItem('PersonalInformation', JSON.stringify(formData))
         this.props.history.push('/educationalInformation')
 
     }
@@ -144,6 +145,21 @@ class PersonalInformation extends Component {
             isValid = value.trim() !== '' && isValid;
             if (rules.regex) {
                 isValid = rules.regex.test(value) && isValid;
+            }
+            if (!rules.taken) {
+                let email = value;
+                let stored_users = JSON.parse(localStorage.getItem('users'))
+                if (stored_users) {
+                    for (let u = 0; u < stored_users.length; u++) {
+                        if (email === stored_users[u].email) {
+                            isValid = false
+                            alert('user mail already taken')
+                            break;
+                        }
+                        
+                    }
+                } 
+                
             }
         }
         return isValid
@@ -164,15 +180,15 @@ class PersonalInformation extends Component {
         if (inputIdentifier === 'confirmPassword') {
             let password = updatedPersonalInformation['password'].value
             let confirmPassword = updatedPersonalInformation['confirmPassword'].value
-            if (password === confirmPassword && confirmPassword.trim() !=='') {
+            if (password === confirmPassword && confirmPassword.trim() !== '') {
                 updatedFormElement.valid = true;
             }
         }
         else {
-            updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation )
+            updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
         }
-        
-        
+
+
 
         let formIsValid = true
         for (let inputIdentifier in updatedPersonalInformation) {

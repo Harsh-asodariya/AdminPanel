@@ -16,7 +16,17 @@ class App extends Component {
   }
 
   logoutHandler = () =>{
+    sessionStorage.clear()
     this.setState({login:false})
+  }
+
+  componentDidMount(){
+    if(!localStorage.getItem('users')){
+      localStorage.setItem('users','[]')
+    }
+    if(!localStorage.getItem('userInformation')){
+      localStorage.setItem('userInformation','[]')
+    }
   }
   
   render() {
