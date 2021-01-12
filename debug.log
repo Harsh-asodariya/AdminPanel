@@ -1,0 +1,14 @@
+[0110/213721.860:ERROR:directory_reader_win.cc(43)] FindFirstFile: The system cannot find the path specified. (0x3)
+[0110/223142.455:ERROR:process_reader_win.cc(123)] NtOpenThread: {Access Denied} A process has requested access to an object, but has not been granted those access rights. (0xc0000022)
+[0110/223142.457:ERROR:process_reader_win.cc(123)] NtOpenThread: {Access Denied} A process has requested access to an object, but has not been granted those access rights. (0xc0000022)
+[0110/223142.471:ERROR:exception_snapshot_win.cc(99)] thread ID 2344 not found in process
+[0110/223142.455:ERROR:process_reader_win.cc(123)] NtOpenThread: {Access Denied} A process has requested access to an object, but has not been granted those access rights. (0xc0000022)
+[0110/223142.471:ERROR:exception_snapshot_win.cc(99)] thread ID 4760 not found in process
+[0110/223142.459:ERROR:process_reader_win.cc(123)] NtOpenThread: {Access Denied} A process has requested access to an object, but has not been granted those access rights. (0xc0000022)
+[0110/223142.470:ERROR:exception_snapshot_win.cc(99)] thread ID 2464 not found in process
+[0110/223142.471:ERROR:exception_snapshot_win.cc(99)] thread ID 9948 not found in process
+[0111/105106.044:ERROR:directory_reader_win.cc(43)] FindFirstFile: The system cannot find the path specified. (0x3)
+[0111/201722.703:ERROR:directory_reader_win.cc(43)] FindFirstFile: The system cannot find the path specified. (0x3)
+[0111/214247.538:ERROR:filesystem_win.cc(129)] GetFileAttributes C:\Users\KDK\AppData\Local\Google\Chrome\User Data\Crashpad\attachments\59d3117f-5ea0-420f-aa8d-0618c2f20190: The system cannot find the path specified. (0x3)
+[0111/214247.743:ERROR:http_transport_win.cc(276)] WinHttpSendRequest: The operation completed successfully. (0x0)
+[0112/093649.133:ERROR:directory_reader_win.cc(43)] FindFirstFile: The system cannot find the path specified. (0x3)
