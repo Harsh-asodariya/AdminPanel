@@ -16,14 +16,22 @@ class Detail extends Component {
             
         }
         
-
-        return (
-            <div className='container' style={{
+        let detail = null;
+        if(this.props.login === true){
+            detail = <div className='container' style={{
                 textAlign: 'center',
                 verticleAlign: 'middle', margin: '100px', fontWeight: 'bold', fontSize: '50px'
             }}>
                 <span>{firstname} {lastname}</span>
-            </div>)
+            </div>
+        }
+        return (
+            <div>
+                {detail}
+            </div>
+            
+        )
+            
     }
 }
 

@@ -58,7 +58,7 @@ class Login extends Component {
             this.props.login()
             sessionStorage.setItem('activeuser',email)
             alert('Login successfull')
-            this.props.history.push('/')
+            this.props.history.push('/loggedin')
         }
         else {
             alert('Enter valid email or password')

@@ -5,6 +5,8 @@ import EducationalInformation from './Form/EducationalInformation';
 import Login from './Auth/Login';
 import { Component } from 'react';
 import Detail from './Detail/Detail';
+import UserDetail from './Detail/User Detail/UserDetail';
+import UserEducation from './Detail/User Detail/UserEducation';
 
 class App extends Component {
   state = {
@@ -30,24 +32,20 @@ class App extends Component {
   }
   
   render() {
-    let detail
-      if(this.state.login === true){
-        detail = <Detail/>
-      }
-      else{
-        detail = null
-      }
+    
     
     
     return (
       <BrowserRouter>
         <div className="App">
           <Navbar login={this.state.login} logout={this.logoutHandler}/>
-          {detail}
           <Switch>
-            <Route path='/signin' render={() => <Login login={this.loginHandler} />} />
+            <Route path='/loggedin' render={() => <Detail login={this.state.login} />} />
+            <Route path='/login' render={() => <Login login={this.loginHandler} />} />
             <Route path='/personalInformation' component={PersonalInformation} />
             <Route path='/educationalInformation' component={EducationalInformation} />
+            <Route path='/userdetail' component={UserDetail} />
+            <Route path='/usereducation' component={UserEducation} />
           </Switch>
         </div>
       </BrowserRouter>
