@@ -6,7 +6,9 @@ import Login from './Auth/Login';
 import { Component } from 'react';
 import Detail from './Detail/Detail';
 import UserDetail from './Detail/User Detail/UserDetail';
-import UserEducation from './Detail/User Detail/UserEducation';
+import UserEducation from './Detail/User Education/UserEducation';
+import EducationaForm from './Form/EducationForm';
+import ChangePassword from './Change Password/changepassword';
 
 class App extends Component {
   state = {
@@ -46,6 +48,8 @@ class App extends Component {
             <Route path='/educationalInformation' component={EducationalInformation} />
             <Route path='/userdetail' component={UserDetail} />
             <Route path='/usereducation' component={UserEducation} />
+            <Route path='/educationForm' component={EducationaForm}/>
+            <Route path='/changePassword' component={ChangePassword}/>
           </Switch>
         </div>
       </BrowserRouter>

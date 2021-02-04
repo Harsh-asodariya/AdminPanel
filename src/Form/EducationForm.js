@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Input from '../InputFields/Input';
 
-class EducationalInformation extends Component {
+class EducationaForm extends Component {
 
     state = {
         EducationalInformation: {
@@ -73,78 +73,44 @@ class EducationalInformation extends Component {
                 touched: false
             },
         },
-        EducationalData: [],
         formIsValid: false,
+        user :'',
+        education :''
     }
 
-    dataHandler = () => {
-            let formData = {}
-            for (let formElement in this.state.EducationalInformation) {
-                formData[formElement] = this.state.EducationalInformation[formElement].value;
+
+    componentDidMount() {
+        const query = new URLSearchParams(this.props.location.search);
+        let user
+        let education
+        for (let param of query.entries()) {
+            if(param[0]==='user'){
+               user = param[1] 
             }
-            const updatedEducationForm = {
+            if(param[0]==='education'){
+                education = param[1]
+            }  
+        }
+        this.setState({user : user, education : education})
+        let Personalinfo = JSON.parse(localStorage.getItem('userInformation'))
+        let Preinfo = Personalinfo[user].educationalInformation[education]
+
+
+            const updatedEducationalInformation = {
                 ...this.state.EducationalInformation
             }
-            const updatedEducationData = [
-                ...this.state.EducationalData
-            ]
-            updatedEducationData.push(formData)
-            sessionStorage.setItem('EducationalInformation', JSON.stringify(updatedEducationData))
-            for (let inputIdentifier in updatedEducationForm) {
-                updatedEducationForm[inputIdentifier].value = '';
-                updatedEducationForm[inputIdentifier].valid = false;
-                updatedEducationForm[inputIdentifier].touched = false;
+            for (let inputIdentifier in updatedEducationalInformation) {
+                updatedEducationalInformation[inputIdentifier].value = Preinfo[inputIdentifier]
+                updatedEducationalInformation[inputIdentifier].touched = true
+                updatedEducationalInformation[inputIdentifier].valid = true
             }
-            document.getElementById('EducationInformation').reset()
-            this.setState({ EducationalInformation: updatedEducationForm, EducationalData: updatedEducationData, formIsValid: false })
-    }
 
-    eventHandler = (event) => {
-        event.preventDefault()
-        if (event.target.id === 'previous') {
-            this.props.history.push('/personalInformation')
-        }
-        let startdate = this.state.EducationalInformation.startDate.value
-        let enddate = this.state.EducationalInformation.endDate.value
-        if((Date.parse(enddate)<=Date.parse(startdate))){
-            alert('enter valid start and end date')
-        }
-        else{
-            if (event.target.id === 'add') {
-                this.dataHandler()
-            }
-            if (event.target.id === 'register') {
-                this.dataHandler()
-                alert('Registered Successfully')
-                const personalInformation = JSON.parse(sessionStorage.getItem('PersonalInformation'))
-                const educationalInformation = JSON.parse(sessionStorage.getItem('EducationalInformation'))
-                var email = personalInformation['email'];
-                var password = personalInformation['password'];
-                let stored_users = JSON.parse(localStorage.getItem('users'));
-                if (stored_users) {
-                    stored_users.push({ email: email, password: password });
-                    localStorage.setItem('users', JSON.stringify(stored_users));
-                } else {
-                    localStorage.setItem('users', JSON.stringify([{ email: email, password: password }]));
-                }
-
-                let user_information = JSON.parse(localStorage.getItem('userInformation'));
-                if (user_information) {
-                    user_information.push({ personalInformation: personalInformation, educationalInformation: educationalInformation });
-                    localStorage.setItem('userInformation', JSON.stringify(user_information));
-                } else {
-                    localStorage.setItem('userInformation', JSON.stringify([{ personalInformation: personalInformation, educationalInformation: educationalInformation }]));
-                }
-                sessionStorage.clear()
-                this.props.history.push('/')
-            }
-        }
+            this.setState({ EducationalInformation: updatedEducationalInformation, formIsValid: true })
     }
 
 
     checkValidity = (value, rules) => {
         let isValid = true;
-        
         if (rules.required) {
             isValid = value.trim() !== '' && isValid;
             if (rules.regex) {
@@ -182,6 +148,32 @@ class EducationalInformation extends Component {
         this.setState({ EducationalInformation: updatedEducationForm, formIsValid: formIsValid })
     }
 
+    eventHandler = (event) =>{
+        event.preventDefault();
+        if(event.target.id === 'cancel'){
+            let access = window.confirm('are you sure?');
+            if(access){
+                this.props.history.push('/usereducation')
+            }
+        }
+        
+        if(event.target.id === 'save'){
+            let access = window.confirm('are you sure?');
+            if(access){
+                let Personalinfo = JSON.parse(localStorage.getItem('userInformation'))
+                let Preinfo = Personalinfo[this.state.user].educationalInformation[this.state.education]
+                for (let formElement in this.state.EducationalInformation) {
+                    
+                    Preinfo[formElement] = this.state.EducationalInformation[formElement].value;
+                    
+                }
+                Personalinfo[this.state.user].educationalInformation[this.state.education] = Preinfo;
+                localStorage.setItem('userInformation',JSON.stringify(Personalinfo))
+                this.props.history.push('/usereducation')
+            }
+        }
+    }
+
     render() {
 
         let formElements = [];
@@ -209,10 +201,10 @@ class EducationalInformation extends Component {
                             changed={(event) => this.inputChangeHandler(event, element.id)} />
                     ))
                 }
-                <button className='Success btn pink lighten-1 z-depth-0' onClick={this.eventHandler} id='previous'>Previous</button>
-                <button className='Success btn pink lighten-1 z-depth-0' onClick={this.eventHandler} id='add' disabled={!this.state.formIsValid}>Add More</button>
-                <button className='Success btn pink lighten-1 z-depth-0' disabled={!this.state.formIsValid} id='register' onClick={this.eventHandler}>Register</button>
-            </form>
+            <button className='Success btn pink lighten-1 z-depth-0' id='cancel' onClick={this.eventHandler}>CANCEL</button>
+            <button className='Success btn pink lighten-1 z-depth-0' id='save' onClick={this.eventHandler} disabled={!this.state.formIsValid}>SAVE</button>
+                
+           </form>
         )
 
         return (
@@ -223,4 +215,4 @@ class EducationalInformation extends Component {
     }
 }
 
-export default EducationalInformation;
+export default EducationaForm;

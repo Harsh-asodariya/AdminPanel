@@ -40,18 +40,20 @@ class Login extends Component {
 
     dataHandler = (event) => {
         event.preventDefault()
-
+        let emailIn = false;
         const email = this.state.loginForm['email'].value;
         const password = this.state.loginForm['password'].value;
         let verified = false
         let stored_users = JSON.parse(localStorage.getItem('users'))
         if (stored_users) {
             for (let u = 0; u < stored_users.length; u++) {
-                if (email === stored_users[u].email && password === stored_users[u].password) {
-                    verified = true;
-                    break;
-                }
-                
+                if (email === stored_users[u].email){
+                    emailIn = true;
+                    if(password === stored_users[u].password) {
+                        verified = true;
+                        break;
+                    }
+                } 
             }
         }
         if (verified) {
@@ -60,8 +62,11 @@ class Login extends Component {
             alert('Login successfull')
             this.props.history.push('/loggedin')
         }
-        else {
-            alert('Enter valid email or password')
+        else if(emailIn){
+            alert('Enter Valid Password')
+        }
+        else{
+            alert('Enter Valid Email')
         }
     }
 
