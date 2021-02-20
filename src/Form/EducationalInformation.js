@@ -78,25 +78,53 @@ class EducationalInformation extends Component {
     }
 
     dataHandler = () => {
-            let formData = {}
-            for (let formElement in this.state.EducationalInformation) {
-                formData[formElement] = this.state.EducationalInformation[formElement].value;
-            }
-            const updatedEducationForm = {
+        let formData = {}
+        for (let formElement in this.state.EducationalInformation) {
+            formData[formElement] = this.state.EducationalInformation[formElement].value;
+        }
+        const updatedEducationForm = {
+            ...this.state.EducationalInformation
+        }
+        const updatedEducationData = [
+            ...this.state.EducationalData
+        ]
+        updatedEducationData.push(formData)
+        sessionStorage.setItem('EducationalInformation', JSON.stringify(updatedEducationData))
+        for (let inputIdentifier in updatedEducationForm) {
+            updatedEducationForm[inputIdentifier].value = '';
+            updatedEducationForm[inputIdentifier].valid = false;
+            updatedEducationForm[inputIdentifier].touched = false;
+        }
+        document.getElementById('EducationInformation').reset()
+        this.setState({ EducationalInformation: updatedEducationForm, EducationalData: updatedEducationData, formIsValid: false })
+    }
+
+    DeleteEventHandler = (index) => {
+        let access = window.confirm('Are you sure');
+        if (access) {
+            let tempdata = this.state.EducationalData
+            tempdata.splice(index, 1)
+            this.setState({ EducationalData: tempdata })
+        }
+    }
+
+    EditEventHandler = (index) => {
+        let access = window.confirm('Are you sure');
+        if (access) {
+            let Preinfo = this.state.EducationalData[index]
+            const updatedEducationalInformation = {
                 ...this.state.EducationalInformation
             }
-            const updatedEducationData = [
-                ...this.state.EducationalData
-            ]
-            updatedEducationData.push(formData)
-            sessionStorage.setItem('EducationalInformation', JSON.stringify(updatedEducationData))
-            for (let inputIdentifier in updatedEducationForm) {
-                updatedEducationForm[inputIdentifier].value = '';
-                updatedEducationForm[inputIdentifier].valid = false;
-                updatedEducationForm[inputIdentifier].touched = false;
+            for (let inputIdentifier in updatedEducationalInformation) {
+                updatedEducationalInformation[inputIdentifier].value = Preinfo[inputIdentifier]
+                updatedEducationalInformation[inputIdentifier].touched = true
+                updatedEducationalInformation[inputIdentifier].valid = true
             }
-            document.getElementById('EducationInformation').reset()
-            this.setState({ EducationalInformation: updatedEducationForm, EducationalData: updatedEducationData, formIsValid: false })
+            this.setState({ EducationalInformation: updatedEducationalInformation, formIsValid: true })
+            let tempdata = this.state.EducationalData
+            tempdata.splice(index, 1)
+            this.setState({ EducationalData: tempdata })
+        }
     }
 
     eventHandler = (event) => {
@@ -106,10 +134,10 @@ class EducationalInformation extends Component {
         }
         let startdate = this.state.EducationalInformation.startDate.value
         let enddate = this.state.EducationalInformation.endDate.value
-        if((Date.parse(enddate)<=Date.parse(startdate))){
+        if ((Date.parse(enddate) <= Date.parse(startdate))) {
             alert('enter valid start and end date')
         }
-        else{
+        else {
             if (event.target.id === 'add') {
                 this.dataHandler()
             }
@@ -144,7 +172,7 @@ class EducationalInformation extends Component {
 
     checkValidity = (value, rules) => {
         let isValid = true;
-        
+
         if (rules.required) {
             isValid = value.trim() !== '' && isValid;
             if (rules.regex) {
@@ -192,6 +220,44 @@ class EducationalInformation extends Component {
             })
         }
 
+        let show_Detail
+        if (this.state.EducationalData.length > 0) {
+            show_Detail = <div style={{ padding: '20px', backgroundColor: 'lightgray' }}>
+                <table className='striped responsive-table' >
+                    <thead>
+                        <tr>
+                            <th>School/Institute</th>
+                            <th>Stream</th>
+                            <th>Percentage/CGPA</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {this.state.EducationalData.map((user, index) => {
+                            return <tr key={index}>
+                                <td>{user.school}</td>
+                                <td>{user.course}</td>
+                                <td>{user.percentage}</td>
+                                <td>{user.startDate}</td>
+                                <td>{user.endDate}</td>
+                                <td><button className='Success btn pink lighten-1 z-depth-0' onClick={() => { this.EditEventHandler(index) }}>Edit</button></td>
+                                <td><button className='Success btn pink lighten-1 z-depth-0' onClick={() => { this.DeleteEventHandler(index) }}>detete</button></td>
+                            </tr>
+
+                        })}
+                    </tbody>
+                </table>
+            </div>
+        }
+
+
+
+
+
         let form = (
             <form style={{ textAlign: 'left' }} id='EducationInformation'>
                 <h5 className='gery-text text-darken-3'>Educational Information</h5>
@@ -216,9 +282,9 @@ class EducationalInformation extends Component {
         )
 
         return (
-            <div className='container' style={{ textAlign: 'center' }}>
+            <div className='container' style={{ textAlign: 'center', marginTop: '50px', backgroundColor: 'white' }}>
                 {form}
-
+                {show_Detail}
             </div>);
     }
 }
