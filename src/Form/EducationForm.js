@@ -1,3 +1,4 @@
+import { getByLabelText } from '@testing-library/dom';
 import React, { Component } from 'react';
 import Input from '../InputFields/Input';
 
@@ -46,36 +47,24 @@ class EducationaForm extends Component {
                 valid: false,
                 touched: false
             },
-            startDate: {
-                label: 'Start Date',
+            dateRange: {
+                label: 'Date Range',
                 elementType: 'Date',
                 elementConfig: {
                     type: 'Text',
                 },
-                value: '',
+                value:'',
                 validation: {
                     required: true,
+                    date: 'startDate'
                 },
-                valid: false,
-                touched: false
-            },
-            endDate: {
-                label: 'End Date',
-                elementType: 'Date',
-                elementConfig: {
-                    type: 'Text',
-                },
-                value: '',
-                validation: {
-                    required: true,
-                },
-                valid: false,
+                valid: true,
                 touched: false
             },
         },
         formIsValid: false,
-        user :'',
-        education :''
+        user: '',
+        education: ''
     }
 
 
@@ -84,28 +73,28 @@ class EducationaForm extends Component {
         let user
         let education
         for (let param of query.entries()) {
-            if(param[0]==='user'){
-               user = param[1] 
+            if (param[0] === 'user') {
+                user = param[1]
             }
-            if(param[0]==='education'){
+            if (param[0] === 'education') {
                 education = param[1]
-            }  
+            }
         }
-        this.setState({user : user, education : education})
+        this.setState({ user: user, education: education })
         let Personalinfo = JSON.parse(localStorage.getItem('userInformation'))
         let Preinfo = Personalinfo[user].educationalInformation[education]
+        console.log(Preinfo)
 
 
-            const updatedEducationalInformation = {
-                ...this.state.EducationalInformation
-            }
-            for (let inputIdentifier in updatedEducationalInformation) {
-                updatedEducationalInformation[inputIdentifier].value = Preinfo[inputIdentifier]
-                updatedEducationalInformation[inputIdentifier].touched = true
-                updatedEducationalInformation[inputIdentifier].valid = true
-            }
-
-            this.setState({ EducationalInformation: updatedEducationalInformation, formIsValid: true })
+        const updatedEducationalInformation = {
+            ...this.state.EducationalInformation
+        }
+        for (let inputIdentifier in updatedEducationalInformation) {
+            updatedEducationalInformation[inputIdentifier].value = Preinfo[inputIdentifier]
+            updatedEducationalInformation[inputIdentifier].touched = true
+            updatedEducationalInformation[inputIdentifier].valid = true
+        }
+        this.setState({ EducationalInformation: updatedEducationalInformation, formIsValid: true })
     }
 
 
@@ -120,23 +109,18 @@ class EducationaForm extends Component {
         return isValid
     }
 
-    inputChangeHandler = (event, inputIdentifier) => {
+    inputChangeHandler = (event, inputIdentifier, picker) => {
         const updatedEducationForm = {
             ...this.state.EducationalInformation
         }
-        const updatedFormElement = {
+        let updatedFormElement = {
             ...updatedEducationForm[inputIdentifier]
         }
-        if (inputIdentifier === 'startDate' || inputIdentifier === 'endDate') {
-            if (event) {
-                updatedFormElement.value = event.toLocaleDateString();
-            }
-        }
-        else {
-            updatedFormElement.value = event.target.value;
-        }
+        updatedFormElement.value = event.target.value;
+
 
         updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
+
         updatedFormElement.touched = true;
         updatedEducationForm[inputIdentifier] = updatedFormElement
 
@@ -145,30 +129,32 @@ class EducationaForm extends Component {
             formIsValid = updatedEducationForm[inputIdentifier].valid && formIsValid
         }
 
+        console.log(updatedEducationForm)
+
         this.setState({ EducationalInformation: updatedEducationForm, formIsValid: formIsValid })
     }
 
-    eventHandler = (event) =>{
+    eventHandler = (event) => {
         event.preventDefault();
-        if(event.target.id === 'cancel'){
+        if (event.target.id === 'cancel') {
             let access = window.confirm('are you sure?');
-            if(access){
+            if (access) {
                 this.props.history.push('/usereducation')
             }
         }
-        
-        if(event.target.id === 'save'){
+
+        if (event.target.id === 'save') {
             let access = window.confirm('are you sure?');
-            if(access){
+            if (access) {
                 let Personalinfo = JSON.parse(localStorage.getItem('userInformation'))
                 let Preinfo = Personalinfo[this.state.user].educationalInformation[this.state.education]
                 for (let formElement in this.state.EducationalInformation) {
-                    
+
                     Preinfo[formElement] = this.state.EducationalInformation[formElement].value;
-                    
+
                 }
                 Personalinfo[this.state.user].educationalInformation[this.state.education] = Preinfo;
-                localStorage.setItem('userInformation',JSON.stringify(Personalinfo))
+                localStorage.setItem('userInformation', JSON.stringify(Personalinfo))
                 this.props.history.push('/usereducation')
             }
         }
@@ -198,17 +184,17 @@ class EducationaForm extends Component {
                             value={element.config.value}
                             invalid={!element.config.valid}
                             touched={element.config.touched}
-                            changed={(event) => this.inputChangeHandler(event, element.id)} />
+                            changed={(event, picker) => this.inputChangeHandler(event, element.id, picker)} />
                     ))
                 }
-            <button className='Success btn pink lighten-1 z-depth-0' id='cancel' onClick={this.eventHandler}>CANCEL</button>
-            <button className='Success btn pink lighten-1 z-depth-0' id='save' onClick={this.eventHandler} disabled={!this.state.formIsValid}>SAVE</button>
-                
-           </form>
+                <button className='Success btn pink lighten-1 z-depth-0 m-3' id='cancel' onClick={this.eventHandler}>CANCEL</button>
+                <button className='Success btn pink lighten-1 z-depth-0' id='save' onClick={this.eventHandler} disabled={!this.state.formIsValid}>SAVE</button>
+
+            </form>
         )
 
         return (
-            <div className='container' style={{ textAlign: 'center' }}>
+            <div className='container' style={{ textAlign: 'center', width: '120%' }} >
                 {form}
 
             </div>);

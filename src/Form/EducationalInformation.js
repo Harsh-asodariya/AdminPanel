@@ -46,8 +46,8 @@ class EducationalInformation extends Component {
                 valid: false,
                 touched: false
             },
-            startDate: {
-                label: 'Start Date',
+            dateRange: {
+                label: 'Course Date',
                 elementType: 'Date',
                 elementConfig: {
                     type: 'Text',
@@ -55,19 +55,7 @@ class EducationalInformation extends Component {
                 value: '',
                 validation: {
                     required: true,
-                },
-                valid: false,
-                touched: false
-            },
-            endDate: {
-                label: 'End Date',
-                elementType: 'Date',
-                elementConfig: {
-                    type: 'Text',
-                },
-                value: '',
-                validation: {
-                    required: true,
+                    date: 'startDate'
                 },
                 valid: false,
                 touched: false
@@ -91,11 +79,11 @@ class EducationalInformation extends Component {
         updatedEducationData.push(formData)
         sessionStorage.setItem('EducationalInformation', JSON.stringify(updatedEducationData))
         for (let inputIdentifier in updatedEducationForm) {
-            updatedEducationForm[inputIdentifier].value = '';
-            updatedEducationForm[inputIdentifier].valid = false;
-            updatedEducationForm[inputIdentifier].touched = false;
+            if(inputIdentifier !== 'dateRange')
+                updatedEducationForm[inputIdentifier].value = '';
+                updatedEducationForm[inputIdentifier].valid = false;
+                updatedEducationForm[inputIdentifier].touched = false;
         }
-        document.getElementById('EducationInformation').reset()
         this.setState({ EducationalInformation: updatedEducationForm, EducationalData: updatedEducationData, formIsValid: false })
     }
 
@@ -132,47 +120,39 @@ class EducationalInformation extends Component {
         if (event.target.id === 'previous') {
             this.props.history.push('/personalInformation')
         }
-        let startdate = this.state.EducationalInformation.startDate.value
-        let enddate = this.state.EducationalInformation.endDate.value
-        if ((Date.parse(enddate) <= Date.parse(startdate))) {
-            alert('enter valid start and end date')
+        if (event.target.id === 'add') {
+            this.dataHandler()
         }
-        else {
-            if (event.target.id === 'add') {
-                this.dataHandler()
+        if (event.target.id === 'register') {
+            this.dataHandler()
+            alert('Registered Successfully')
+            const personalInformation = JSON.parse(sessionStorage.getItem('PersonalInformation'))
+            const educationalInformation = JSON.parse(sessionStorage.getItem('EducationalInformation'))
+            var email = personalInformation['email'];
+            var password = personalInformation['password'];
+            let stored_users = JSON.parse(localStorage.getItem('users'));
+            if (stored_users) {
+                stored_users.push({ email: email, password: password });
+                localStorage.setItem('users', JSON.stringify(stored_users));
+            } else {
+                localStorage.setItem('users', JSON.stringify([{ email: email, password: password }]));
             }
-            if (event.target.id === 'register') {
-                this.dataHandler()
-                alert('Registered Successfully')
-                const personalInformation = JSON.parse(sessionStorage.getItem('PersonalInformation'))
-                const educationalInformation = JSON.parse(sessionStorage.getItem('EducationalInformation'))
-                var email = personalInformation['email'];
-                var password = personalInformation['password'];
-                let stored_users = JSON.parse(localStorage.getItem('users'));
-                if (stored_users) {
-                    stored_users.push({ email: email, password: password });
-                    localStorage.setItem('users', JSON.stringify(stored_users));
-                } else {
-                    localStorage.setItem('users', JSON.stringify([{ email: email, password: password }]));
-                }
 
-                let user_information = JSON.parse(localStorage.getItem('userInformation'));
-                if (user_information) {
-                    user_information.push({ personalInformation: personalInformation, educationalInformation: educationalInformation });
-                    localStorage.setItem('userInformation', JSON.stringify(user_information));
-                } else {
-                    localStorage.setItem('userInformation', JSON.stringify([{ personalInformation: personalInformation, educationalInformation: educationalInformation }]));
-                }
-                sessionStorage.clear()
-                this.props.history.push('/')
+            let user_information = JSON.parse(localStorage.getItem('userInformation'));
+            if (user_information) {
+                user_information.push({ personalInformation: personalInformation, educationalInformation: educationalInformation });
+                localStorage.setItem('userInformation', JSON.stringify(user_information));
+            } else {
+                localStorage.setItem('userInformation', JSON.stringify([{ personalInformation: personalInformation, educationalInformation: educationalInformation }]));
             }
+            sessionStorage.clear()
+            this.props.history.push('/')
         }
     }
 
 
     checkValidity = (value, rules) => {
         let isValid = true;
-
         if (rules.required) {
             isValid = value.trim() !== '' && isValid;
             if (rules.regex) {
@@ -189,14 +169,7 @@ class EducationalInformation extends Component {
         const updatedFormElement = {
             ...updatedEducationForm[inputIdentifier]
         }
-        if (inputIdentifier === 'startDate' || inputIdentifier === 'endDate') {
-            if (event) {
-                updatedFormElement.value = event.toLocaleDateString();
-            }
-        }
-        else {
-            updatedFormElement.value = event.target.value;
-        }
+        updatedFormElement.value = event.target.value;
 
         updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
         updatedFormElement.touched = true;
@@ -229,8 +202,7 @@ class EducationalInformation extends Component {
                             <th>School/Institute</th>
                             <th>Stream</th>
                             <th>Percentage/CGPA</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
+                            <th>course Date</th>
                             <th></th>
                             <th></th>
                         </tr>
@@ -242,8 +214,7 @@ class EducationalInformation extends Component {
                                 <td>{user.school}</td>
                                 <td>{user.course}</td>
                                 <td>{user.percentage}</td>
-                                <td>{user.startDate}</td>
-                                <td>{user.endDate}</td>
+                                <td>{user.dateRange}</td>
                                 <td><button className='Success btn pink lighten-1 z-depth-0' onClick={() => { this.EditEventHandler(index) }}>Edit</button></td>
                                 <td><button className='Success btn pink lighten-1 z-depth-0' onClick={() => { this.DeleteEventHandler(index) }}>detete</button></td>
                             </tr>
@@ -253,7 +224,6 @@ class EducationalInformation extends Component {
                 </table>
             </div>
         }
-
 
 
 
@@ -276,7 +246,7 @@ class EducationalInformation extends Component {
                     ))
                 }
                 <button className='Success btn pink lighten-1 z-depth-0' onClick={this.eventHandler} id='previous'>Previous</button>
-                <button className='Success btn pink lighten-1 z-depth-0' onClick={this.eventHandler} id='add' disabled={!this.state.formIsValid}>Add More</button>
+                <button className='Success btn pink lighten-1 z-depth-0 m-3' onClick={this.eventHandler} id='add' disabled={!this.state.formIsValid}>Add More</button>
                 <button className='Success btn pink lighten-1 z-depth-0' disabled={!this.state.formIsValid} id='register' onClick={this.eventHandler}>Register</button>
             </form>
         )

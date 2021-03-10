@@ -2,15 +2,25 @@ import React from 'react';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
 
+import DateRangePicker from 'react-bootstrap-daterangepicker';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-daterangepicker/daterangepicker.css';
+
 const input = (props) => {
     let inputElement = null;
     let inputClasses = []
     let labelClasses = []
-    if(props.touched){
+    if (props.touched) {
         labelClasses.push('active')
     }
-    if(props.invalid && props.touched) {
+    if (props.invalid && props.touched) {
         inputClasses.push('invalid')
+    }
+
+    const selectionRange = {
+        startDate: new Date(),
+        endDate: new Date(),
+        key: 'selection',
     }
 
     switch (props.elementType) {
@@ -48,11 +58,9 @@ const input = (props) => {
         case 'Date':
             inputElement = <div >
                 <label style={{ display: 'inline', paddingRight: '20px' }}>{props.label}</label>
-                <DayPickerInput
-
-                    onChange={props.changed}
-                    onDayChange={props.changed}
-                    value={props.value} />
+                <DateRangePicker initialSettings={{ startDate: new Date(), endDate: new Date() }}  onEvent={props.changed}>
+                    <input type="text" className="form-control" value={props.value}/>
+                </DateRangePicker>
 
             </div>
             break;
